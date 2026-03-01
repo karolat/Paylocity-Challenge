@@ -15,7 +15,7 @@ test.describe('Employees API, CRUD Operations', () => {
 
   test.describe('Employees API, CRUD Operations', () => {
     test.beforeEach(async ({ request }) => {
-      // Clean up all employees before each test, so we have a clean slate.
+      // Clean up all employees before each test, so we have test isolation.
       await cleanupAllEmployees(request);
     });
 
