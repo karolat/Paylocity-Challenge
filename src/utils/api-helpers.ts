@@ -1,6 +1,6 @@
 import { APIRequestContext } from '@playwright/test';
 
-const EMPLOYEES_ENDPOINT = '/api/Employees';
+const EMPLOYEES_ENDPOINT = 'api/Employees/';
 
 export async function createEmployee(
   request: APIRequestContext,
@@ -10,7 +10,7 @@ export async function createEmployee(
 }
 
 export async function deleteEmployee(request: APIRequestContext, id: string) {
-  return request.delete(`${EMPLOYEES_ENDPOINT}/${id}`);
+  return request.delete(`${EMPLOYEES_ENDPOINT}${id}`);
 }
 
 export async function getAllEmployees(request: APIRequestContext) {
@@ -18,7 +18,7 @@ export async function getAllEmployees(request: APIRequestContext) {
 }
 
 export async function getEmployeeById(request: APIRequestContext, id: string) {
-  return request.get(`${EMPLOYEES_ENDPOINT}/${id}`);
+  return request.get(`${EMPLOYEES_ENDPOINT}${id}`);
 }
 
 export async function updateEmployee(
