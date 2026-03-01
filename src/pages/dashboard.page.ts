@@ -68,6 +68,28 @@ export class DashboardPage {
     await this.page.locator('#employeeModal').waitFor({ state: 'hidden' });
   }
 
+  async editEmployee(
+    rowIndex: number,
+    firstName: string,
+    lastName: string,
+    dependants: number,
+  ) {
+    const row = this.employeesTable.locator('tr').nth(rowIndex);
+    const editIcon = row.locator('.fa-edit');
+    await expect(editIcon).toBeVisible();
+    await editIcon.click();
+
+    await expect(this.modal.firstName).toBeVisible();
+    await this.modal.firstName.clear();
+    await this.modal.firstName.fill(firstName);
+    await this.modal.lastName.clear();
+    await this.modal.lastName.fill(lastName);
+    await this.modal.dependants.clear();
+    await this.modal.dependants.fill(dependants.toString());
+    await this.modal.updateButton.click();
+    await this.page.locator('#employeeModal').waitFor({ state: 'hidden' });
+  }
+
   async getRowCount(): Promise<number> {
     return this.employeesTable.locator('tr').count();
   }

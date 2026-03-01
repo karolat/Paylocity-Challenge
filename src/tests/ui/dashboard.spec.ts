@@ -20,5 +20,11 @@ test.describe('Benefits Dashboard UI', () => {
     expect(rowCount).toBe(1);
   });
 
+  test('should edit an employee and reflect changes in the table', async () => {
+    await dashboard.addEmployee('Original', 'Name', 0);
+    await dashboard.expectEmployeeAtRow(0, 'Original', 'Name', 0);
 
+    await dashboard.editEmployee(0, 'Updated', 'Employee', 3);
+    await dashboard.expectEmployeeAtRow(0, 'Updated', 'Employee', 3);
+  });
 });
