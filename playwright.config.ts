@@ -7,6 +7,7 @@ import path from 'path';
  * https://github.com/motdotla/dotenv
  */
 dotenv.config({ path: path.resolve(__dirname, '.env'), quiet: true });
+const authFile = path.resolve(__dirname, '.auth/user.json');
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -30,9 +31,6 @@ export default defineConfig({
     trace: 'on-first-retry',
 
     baseURL: 'https://wmxrwq14uc.execute-api.us-east-1.amazonaws.com/Prod/',
-    extraHTTPHeaders: {
-      Authorization: `Basic ${process.env.AUTH_TOKEN}`,
-    },
   },
 
   /* Configure projects for major browsers */
@@ -40,6 +38,11 @@ export default defineConfig({
     {
       name: 'api',
       testMatch: /src\/tests\/api\/.*\.spec\.ts/,
+      use: {
+        extraHTTPHeaders: {
+          Authorization: `Basic ${process.env.AUTH_TOKEN ?? ''}`,
+        },
+      },
     },
     {
       name: 'auth-setup',
@@ -49,7 +52,7 @@ export default defineConfig({
       name: 'chromium',
       testIgnore: /src\/tests\/api\/.*/,
       dependencies: ['auth-setup'],
-      use: { ...devices['Desktop Chrome'], storageState: '.auth/user.json' },
+      use: { ...devices['Desktop Chrome'], storageState: authFile },
     },
   ],
 });
