@@ -1,5 +1,12 @@
 import { test, expect } from '@playwright/test';
-import { createEmployee, cleanupAllEmployees, getAllEmployees } from '@/utils';
+import {
+  createEmployee,
+  cleanupAllEmployees,
+  getAllEmployees,
+  updateEmployee,
+  getEmployeeById,
+  deleteEmployee,
+} from '@/utils';
 
 test.describe('Employees API, CRUD Operations', () => {
   test.beforeEach(async ({ request }) => {
@@ -55,22 +62,96 @@ test.describe('Employees API, CRUD Operations', () => {
 
     test.describe('PUT /api/Employees, Update an employee', () => {
       test('should update employee name', async ({ request }) => {
+        const createResponse = await createEmployee(request, {
+          firstName: 'Original',
+          lastName: 'Name',
+          dependants: 0,
+        });
+        const employee = await createResponse.json();
 
+        const updateResponse = await updateEmployee(request, {
+          ...employee,
+          firstName: 'Updated',
+          lastName: 'Employee',
+        });
+
+        expect(updateResponse.ok()).toBeTruthy();
+        const updated = await updateResponse.json();
+        expect(updated.firstName).toBe('Updated');
+        expect(updated.lastName).toBe('Employee');
       });
 
-      test('should update dependants count', async ({ request }) => {});
+      test('should update dependants count', async ({ request }) => {
+        const createResponse = await createEmployee(request, {
+          firstName: 'Test',
+          lastName: 'Deps',
+          dependants: 0,
+        });
+        const employee = await createResponse.json();
+
+        const updateResponse = await updateEmployee(request, {
+          ...employee,
+          dependants: 4,
+        });
+
+        expect(updateResponse.ok()).toBeTruthy();
+        const updated = await updateResponse.json();
+        expect(updated.dependants).toBe(4);
+      });
 
       test('should persist updates when retrieved via GET', async ({
         request,
-      }) => {});
+      }) => {
+        const createResponse = await createEmployee(request, {
+          firstName: 'Before',
+          lastName: 'Update',
+          dependants: 1,
+        });
+        const employee = await createResponse.json();
+
+        await updateEmployee(request, {
+          ...employee,
+          firstName: 'After',
+        });
+
+        const getResponse = await getEmployeeById(request, employee.id);
+        const fetched = await getResponse.json();
+        expect(fetched.firstName).toBe('After');
+      });
     });
 
     test.describe('DELETE /api/Employees/:id, Delete an employee', () => {
-      test('should delete an employee successfully', async ({ request }) => {});
+      test('should delete an employee successfully', async ({ request }) => {
+        const createResponse = await createEmployee(request, {
+          firstName: 'Delete',
+          lastName: 'Me',
+          dependants: 0,
+        });
+        const employee = await createResponse.json();
+
+        const deleteResponse = await deleteEmployee(request, employee.id);
+        expect(deleteResponse.ok()).toBeTruthy();
+      });
 
       test('should no longer appear in employee list after deletion', async ({
         request,
-      }) => {});
+      }) => {
+        const createResponse = await createEmployee(request, {
+          firstName: 'Remove',
+          lastName: 'Me',
+          dependants: 0,
+        });
+        const employee = await createResponse.json();
+
+        await deleteEmployee(request, employee.id);
+
+        const listResponse = await getAllEmployees(request);
+        const employees = await listResponse.json();
+        const found = employees.find(
+          (e: { id: string }) => e.id === employee.id,
+        );
+        expect(found).toBeUndefined();
+      });
     });
   });
 });
