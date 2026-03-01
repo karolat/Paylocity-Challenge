@@ -26,8 +26,6 @@ export default defineConfig({
   reporter: 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
-
-
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
 
@@ -44,20 +42,14 @@ export default defineConfig({
       testMatch: /src\/tests\/api\/.*\.spec\.ts/,
     },
     {
+      name: 'auth-setup',
+      testMatch: /src\/tests\/setup\/auth\.setup\.ts/,
+    },
+    {
       name: 'chromium',
       testIgnore: /src\/tests\/api\/.*/,
-      use: { ...devices['Desktop Chrome'] },
-    },
-
-    {
-      name: 'firefox',
-      testIgnore: /src\/tests\/api\/.*/,
-      use: { ...devices['Desktop Firefox'] },
-    },
-    {
-      name: 'webkit',
-      testIgnore: /src\/tests\/api\/.*/,
-      use: { ...devices['Desktop Safari'] },
+      dependencies: ['auth-setup'],
+      use: { ...devices['Desktop Chrome'], storageState: '.auth/user.json' },
     },
   ],
 });
