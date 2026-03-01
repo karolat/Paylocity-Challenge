@@ -90,6 +90,17 @@ export class DashboardPage {
     await this.page.locator('#employeeModal').waitFor({ state: 'hidden' });
   }
 
+  async deleteEmployeeByRow(rowIndex: number) {
+    const row = this.employeesTable.locator('tr').nth(rowIndex);
+    const deleteIcon = row.locator('.fa-times');
+    await expect(deleteIcon).toBeVisible();
+    await deleteIcon.click();
+
+    await expect(this.deleteModal.confirmButton).toBeVisible();
+    await this.deleteModal.confirmButton.click();
+    await this.page.locator('#deleteModal').waitFor({ state: 'hidden' });
+  }
+
   async getRowCount(): Promise<number> {
     return this.employeesTable.locator('tr').count();
   }

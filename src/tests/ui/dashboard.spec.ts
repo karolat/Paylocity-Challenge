@@ -1,7 +1,7 @@
 // src/tests/ui/dashboard.spec.ts
 
 import { expect, test } from '@playwright/test';
-import { DashboardPage } from '@/pages/dashboard.page'
+import { DashboardPage } from '@/pages/dashboard.page';
 import { cleanupAllEmployees } from '@/utils';
 
 test.describe('Benefits Dashboard UI', () => {
@@ -23,8 +23,26 @@ test.describe('Benefits Dashboard UI', () => {
   test('should edit an employee and reflect changes in the table', async () => {
     await dashboard.addEmployee('Original', 'Name', 0);
     await dashboard.expectEmployeeAtRow(0, 'Original', 'Name', 0);
+    let rowCount = await dashboard.getRowCount();
+    expect(rowCount).toBe(1);
 
     await dashboard.editEmployee(0, 'Updated', 'Employee', 3);
     await dashboard.expectEmployeeAtRow(0, 'Updated', 'Employee', 3);
+    rowCount = await dashboard.getRowCount();
+    expect(rowCount).toBe(1);
+  });
+
+  test('should delete an employee and remove from the table', async () => {
+    await dashboard.addEmployee('Delete', 'Me', 0);
+    await dashboard.expectEmployeeAtRow(0, 'Delete', 'Me', 0);
+    let rowCount = await dashboard.getRowCount();
+    expect(rowCount).toBe(1);
+
+    await dashboard.deleteEmployeeByRow(0);
+    rowCount = await dashboard.getRowCount();
+    // Web-first: retries until the table has no data rows
+    await expect(dashboard.employeesTable.locator('tr').first()).toContainText(
+      'No employees found',
+    );
   });
 });
