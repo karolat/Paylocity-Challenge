@@ -26,7 +26,7 @@ jobs:
         AUTH_TOKEN: ${{ secrets.AUTH_TOKEN }}
         USERNAME: ${{ secrets.USERNAME }}
         PASSWORD: ${{ secrets.PASSWORD }}
-      run: npx playwright test
+      run: npx playwright test --trace=retain-on-failure
     - name: Check Playwright report availability
       id: report_check
       if: ${{ always() && !cancelled() }}
